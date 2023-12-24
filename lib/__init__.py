@@ -1,8 +1,12 @@
+import jwt
 import hashlib
 
+from fastapi.exceptions import HTTPException
+
+from jwt import PyJWTError
 from config import config
 
-
+JWT_KEY = config['keys']['JWT_KEY']
 HASH_KEY = config['keys']['SHA256_KEY']
 
 
@@ -18,11 +22,19 @@ def hash_password(password: str) -> str:
     return hashed_password
 
 
-def encode_jwt_token() -> str:
-    pass
+def encode_jwt_token(model: dict) -> str:
+    try:
+        encoded_jwt = jwt.encode(model, JWT_KEY, algorithm="HS256")
+        return encoded_jwt
+    except PyJWTError:
+        raise HTTPException(401, "Ошибка формирования токена авторизации")
 
 
-def decode_jwt_token() -> str:
-    pass
+def decode_jwt_token(token: str) -> dict:
+    try:
+        decoded_jwt = jwt.decode(token, JWT_KEY, algorithms=['HS256'])
+        return decoded_jwt
+    except PyJWTError:
+        raise HTTPException(401, "Ошибка парсинга токена авторизации")
 
 

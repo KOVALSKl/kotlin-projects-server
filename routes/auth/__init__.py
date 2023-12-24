@@ -1,8 +1,11 @@
-import jwt
-
 from fastapi import APIRouter
+from fastapi.exceptions import HTTPException
+
 from database import *
 from database.models import User, LoginUser, RegistrationUser
+
+from lib import encode_jwt_token, decode_jwt_token, hash_password
+from uuid import UUID
 
 router = APIRouter(
     prefix="/auth",
@@ -26,21 +29,69 @@ async def startup():
     )
 
 
-@router.get("login")
+@router.post("/login")
 async def login(user: LoginUser):
-
-    
+    hashed_password = hash_password(user.password)
 
     database_user = database.select_one(
         "users",
+        ["*"],
         DatabaseWhereQuery({
-            DatabaseLogicalOperators.AND: {
+            DatabaseLogicalOperators.AND.value: {
+                "login": user.login,
+                "password": hashed_password
+            }
+        })
+    )
+
+    if not database_user:
+        raise HTTPException(404, "Пользователь не найден")
+
+    database_user["id"] = UUID(database_user["id"])
+
+    database_user_model = User(**database_user)
+
+    jwt_token = encode_jwt_token(
+        database_user_model.model_dump(exclude={
+            "password": True,
+            "created_at": True,
+        })
+    )
+
+    return jwt_token
+
+
+@router.post("/registration")
+async def registration(user: RegistrationUser):
+    hashed_password = hash_password(user.password)
+
+    database_user = database.select_one(
+        "users",
+        ["*"],
+        DatabaseWhereQuery({
+            DatabaseLogicalOperators.AND.value: {
                 "login": user.login
             }
         })
     )
 
+    if database_user:
+        raise HTTPException(400, "Пользователь существует")
 
-@router.get("registration")
-async def registration():
-    pass
+    user.password = hashed_password
+
+    database_user_model = User(**user.model_dump())
+
+    database.insert(
+        "users",
+        database_user_model.model_dump()
+    )
+
+    jwt_token = encode_jwt_token(
+        database_user_model.model_dump(exclude={
+            "password": True,
+            "created_at": True,
+        })
+    )
+
+    return jwt_token

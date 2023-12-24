@@ -6,10 +6,13 @@ import logging
 class Configuration:
     def __init__(self):
         self.log = logging.getLogger('config')
+        current_path = os.getcwd()
         self.config_path = os.environ.get('CONFIG_PATH', os.path.join(
-            os.getcwd(),
-            "/config/config.toml"
+            current_path,
+            "./config/config.toml"
         ))
+        print(os.getcwd())
+        print(self.config_path)
         self.config = None
 
         self.read()
