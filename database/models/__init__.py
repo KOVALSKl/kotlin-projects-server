@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, field_serializer
 
 
 class DataBaseModel(BaseModel):
-    id: UUID = uuid4()
+    id: UUID = Field(default=uuid4())
     created_at: str = datetime.utcnow().isoformat()
     
     @field_serializer("id")

@@ -1,3 +1,4 @@
+from uuid import uuid4
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
@@ -90,7 +91,7 @@ async def create_news(channel_id: str, client_news: ClientNews):
 
 @router.get("/{channel_id}/{news_id}")
 async def get_news_info(channel_id: str, news_id: str):
-    channel = database.select_many(
+    channel = database.select_one(
         "channel_articles",
         ["*"],
         DatabaseWhereQuery({
