@@ -11,8 +11,7 @@ class Configuration:
             current_path,
             "./config/config.toml"
         ))
-        print(os.getcwd())
-        print(self.config_path)
+
         self.config = None
 
         self.read()

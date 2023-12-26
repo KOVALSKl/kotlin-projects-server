@@ -38,7 +38,7 @@ class Channel(DataBaseModel):
 
 
 class ClientChannel(BaseModel):
-    id: str = Field(exclude=True)
+    id: UUID = Field(exclude=True)
     name: str
 
 
