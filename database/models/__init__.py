@@ -38,6 +38,7 @@ class Channel(DataBaseModel):
 
 
 class ClientChannel(BaseModel):
+    id: str = Field(exclude=True)
     name: str
 
 
