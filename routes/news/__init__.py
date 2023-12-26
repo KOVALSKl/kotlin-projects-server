@@ -24,6 +24,23 @@ async def startup():
     )
 
     database.create_table(
+        "news_sections",
+        {
+            "id": [DatabaseTypes.TEXT, DatabaseTypes.PRIMARY_KEY],
+            "name": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL, DatabaseTypes.UNIQUE],
+            "created_at": [DatabaseTypes.TEXT],
+            "channel_id": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL]
+        },
+        {
+            "channel_id": DatabaseReference(
+                "news_channels",
+                "id",
+                on_delete=DatabaseActions.CASCADE
+            )
+        }
+    )
+
+    database.create_table(
         "channel_articles",
         {
             "id": [DatabaseTypes.TEXT, DatabaseTypes.PRIMARY_KEY],
@@ -31,9 +48,15 @@ async def startup():
             "date": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "content": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "created_at": [DatabaseTypes.TEXT],
+            "news_section_id": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "channel_id": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL]
         },
         {
+            "news_section_id": DatabaseReference(
+                "news_sections",
+                "id",
+                on_delete=DatabaseActions.CASCADE
+            ),
             "channel_id": DatabaseReference(
                 "news_channels",
                 "id",
@@ -58,7 +81,8 @@ async def create_channel(client_channel: ClientChannel):
     """Создание необходимых таблиц"""
     client_channel_dict = client_channel.model_dump()
     channel_model = Channel(
-        **client_channel_dict
+        **client_channel_dict,
+        id=uuid4()
     )
 
     database.insert("news_channels", channel_model.model_dump())
@@ -83,7 +107,8 @@ async def get_channel_news(channel_id: str):
 async def create_news(channel_id: str, client_news: ClientNews):
     client_news_dict = client_news.model_dump()
     news_model = News(
-        **client_news_dict
+        **client_news_dict,
+        id=uuid4()
     )
 
     database.insert("channel_articles", news_model.model_dump())

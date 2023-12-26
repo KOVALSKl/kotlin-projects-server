@@ -41,11 +41,25 @@ class ClientChannel(BaseModel):
     name: str
 
 
+class NewsSection(DataBaseModel):
+    news: str
+    channel_id: UUID
+
+    @field_serializer("channel_id")
+    def serialize_channel_id(self, channel_id: UUID, _info):
+        return str(channel_id)
+
+
 class News(DataBaseModel):
     title: str
     date: str
     content: str
+    news_section_id: UUID
     channel_id: UUID
+
+    @field_serializer("news_section_id")
+    def serialize_news_section_id(self, news_section_id: UUID, _info):
+        return str(news_section_id)
 
     @field_serializer("channel_id")
     def serialize_channel_id(self, channel_id: UUID, _info):
