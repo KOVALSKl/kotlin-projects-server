@@ -51,14 +51,9 @@ async def login(user: LoginUser):
 
     database_user_model = User(**database_user)
 
-    jwt_token = encode_jwt_token(
-        database_user_model.model_dump(exclude={
-            "password": True,
-            "created_at": True,
-        })
-    )
-
-    return jwt_token
+    return database_user_model.model_dump(exclude={
+        "created_at": True,
+    })
 
 
 @router.post("/registration")
@@ -87,11 +82,6 @@ async def registration(user: RegistrationUser):
         database_user_model.model_dump()
     )
 
-    jwt_token = encode_jwt_token(
-        database_user_model.model_dump(exclude={
-            "password": True,
-            "created_at": True,
-        })
-    )
-
-    return jwt_token
+    return database_user_model.model_dump(exclude={
+        "created_at": True,
+    })

@@ -98,7 +98,7 @@ class Database:
 
     def execute(self, command: str):
         try:
-            self.cursor.execute(command)
+            return self.cursor.execute(command)
         except sql.Error as err:
             self.log.error(f"[EXECUTE]:{err}")
 
@@ -140,11 +140,12 @@ class Database:
         except (AttributeError, sql.Error) as err:
             self.log.error(f"[SELECT_MANY]:{err}")
 
-    def update(self, table_name: str, cols: list, query: Dict):
+    def update(self, table_name: str, cols: list, query: DatabaseWhereQuery, values: List):
         """Обновляет занчения в колонках для таблицы в базе"""
         try:
             command = self.update_command(table_name, cols, query)
-            self.cursor.execute(command, (*query.values(),))
+            print(command)
+            self.cursor.execute(command, (*values,))
             self.connection.commit()
         except sql.Error as err:
             self.log.error(f"[UPDATE]:{err}")
@@ -163,11 +164,12 @@ class Database:
         except sql.Error as err:
             self.log.error(f"[CREATE]:{err}")
 
-    def delete(self, table_name, query: Dict):
+    def delete(self, table_name, query: DatabaseWhereQuery):
         """Удаление данных из таблицы по запросу"""
         try:
             command = self.delete_command(table_name, query)
-            self.cursor.execute(command, (*query.values(),))
+            print(command)
+            self.cursor.execute(command)
             self.connection.commit()
         except sql.Error as err:
             self.log.error(f"[DELETE]:{err}")
@@ -208,24 +210,20 @@ class Database:
         return obj
 
     @staticmethod
-    def update_command(table_name: str, cols_to_upd: List[str], query: Dict):
+    def update_command(table_name: str, cols_to_upd: List[str], query: DatabaseWhereQuery):
 
         cols_string = ','.join(list(map(lambda col: f"{col} = ?", cols_to_upd)))
-        query_keys_string = ','.join(list(map(lambda key: f"{key} = ?", query)))
 
         command_string = f"""
-        UPDATE {table_name} SET ({cols_string}) WHERE ({query_keys_string})
+        UPDATE {table_name} SET {cols_string} WHERE {query.and_operator}
         """
 
         return command_string
 
     @staticmethod
-    def delete_command(table_name: str, query: Dict):
-
-        query_keys_string = ','.join(list(map(lambda key: f"{key} = ?", query)))
-
+    def delete_command(table_name: str, query: DatabaseWhereQuery):
         command_string = f"""
-        DELETE FROM {table_name} WHERE {query_keys_string}
+        DELETE FROM {table_name} WHERE {query.and_operator}
         """
 
         return command_string

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes import auth, news, delivery
+from routes import auth, news, delivery, transport
 
 app = FastAPI(
     title="Kotlin Projects Server",
@@ -20,6 +20,8 @@ app.add_middleware(
 )
 
 app.include_router(news.router)
+app.include_router(delivery.router)
+app.include_router(transport.router)
 app.include_router(auth.router)
 
 
