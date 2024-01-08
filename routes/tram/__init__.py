@@ -46,6 +46,9 @@ async def startup():
             "conductor_name": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "start_date": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "trip_number": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
+            "capacity": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
+            "total_distance": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
+            "price": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
             "route_id": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
         },
         {
@@ -72,7 +75,7 @@ async def get_depots():
 async def create_depot(tram_depot: ClientTramDepot):
 
     """Создание необходимых таблиц"""
-    client_depot_dict = tram_depot.model_dump()
+    client_depot_dict = tram_depot.model_dump(exclude={"id": True})
     delivery_service_model = TramDepot(
         **client_depot_dict,
         id=uuid4()
@@ -127,7 +130,9 @@ async def get_routes(depot_id: str):
 
 @router.post("/routes", tags=["tram-routes"])
 async def create_route(route: ClientTramRoute):
-    route_dict = route.model_dump()
+    route_dict = route.model_dump(exclude={
+        "id": True
+    })
     route_model = TramRoute(
         **route_dict,
         id=uuid4()
@@ -171,7 +176,9 @@ async def delete_route(route_id: str):
 async def get_route_trams(tram_depot_id: str, route_id: str):
 
     trams = database.execute(f"""
-        SELECT tr.id, number, driver_name, conductor_name, start_date, trip_number, route_id FROM trams tr 
+        SELECT tr.id, number, driver_name, conductor_name, 
+        start_date, trip_number, capacity, total_distance, price, route_id 
+        FROM trams tr 
         JOIN tram_routes rt on rt.id = tr.route_id 
         WHERE rt.depot_id = '{tram_depot_id}' AND rt.id = '{route_id}';
     """).fetchall()

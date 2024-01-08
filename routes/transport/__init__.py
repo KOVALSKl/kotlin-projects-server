@@ -7,7 +7,6 @@ from database.models import Depot, Route, Transport, ClientDepot, ClientRoute, C
 
 router = APIRouter(
     prefix="/transport",
-    tags=["transport"]
 )
 
 
@@ -57,7 +56,7 @@ async def startup():
     )
 
 
-@router.get("/depots")
+@router.get("/depots", tags=["depots"])
 async def get_depots():
     depots = database.select_many(
         "depots",
@@ -67,7 +66,7 @@ async def get_depots():
     return JSONResponse(depots)
 
 
-@router.post("/depots")
+@router.post("/depots", tags=["depots"])
 async def create_depot(client_depot: ClientDepot):
 
     """Создание необходимых таблиц"""
@@ -80,7 +79,7 @@ async def create_depot(client_depot: ClientDepot):
     database.insert("depots", delivery_service_model.model_dump())
 
 
-@router.put("/depots")
+@router.put("/depots", tags=["depots"])
 async def update_service(client_depot: ClientDepot):
     client_depot_dict = client_depot.model_dump(exclude={"id": True})
 
@@ -96,7 +95,7 @@ async def update_service(client_depot: ClientDepot):
     )
 
 
-@router.delete("/depots/{depot_id}")
+@router.delete("/depots/{depot_id}", tags=["depots"])
 async def delete_service(depot_id: str):
 
     database.delete(
@@ -109,7 +108,7 @@ async def delete_service(depot_id: str):
     )
 
 
-@router.get("/{depot_id}/routes")
+@router.get("/{depot_id}/routes", tags=["routes"])
 async def get_store(depot_id: str):
     sections = database.select_many(
         "routes",
@@ -124,7 +123,7 @@ async def get_store(depot_id: str):
     return JSONResponse(sections)
 
 
-@router.post("/routes")
+@router.post("/routes", tags=["routes"])
 async def create_store(route: ClientRoute):
     route_dict = route.model_dump()
     route_model = Route(
@@ -135,7 +134,7 @@ async def create_store(route: ClientRoute):
     database.insert("routes", route_model.model_dump())
 
 
-@router.put("/routes")
+@router.put("/routes", tags=["routes"])
 async def update_store(route: ClientRoute):
     client_route_dict = route.model_dump(exclude={
         "id": True,
@@ -154,7 +153,7 @@ async def update_store(route: ClientRoute):
     )
 
 
-@router.delete("/routes/{route_id}")
+@router.delete("/routes/{route_id}", tags=["routes"])
 async def delete_store(route_id: str):
     database.delete(
         "routes",
@@ -166,7 +165,7 @@ async def delete_store(route_id: str):
     )
 
 
-@router.get("/{depot_id}/{route_id}")
+@router.get("/{depot_id}/{route_id}", tags=["transports"])
 async def get_store_orders(depot_id: str, route_id: str):
 
     orders = database.execute(f"""
@@ -181,7 +180,7 @@ async def get_store_orders(depot_id: str, route_id: str):
     return orders
 
 
-@router.post("/routes/{route_id}")
+@router.post("/routes/{route_id}", tags=["transports"])
 async def create_order(route_id: str, client_transport: ClientTransport):
     client_transport_dict = client_transport.model_dump(exclude={"id": True})
     news_model = Transport(
@@ -192,7 +191,7 @@ async def create_order(route_id: str, client_transport: ClientTransport):
     database.insert("transports", news_model.model_dump())
 
 
-@router.put("/routes/{route_id}")
+@router.put("/routes/{route_id}", tags=["transports"])
 async def update_order(route_id: str, client_transport: ClientTransport):
 
     client_transport_dict = client_transport.model_dump(exclude={
@@ -213,7 +212,7 @@ async def update_order(route_id: str, client_transport: ClientTransport):
     )
 
 
-@router.delete("/routes/{route_id}/{transport_id}")
+@router.delete("/routes/{route_id}/{transport_id}", tags=["transports"])
 async def delete_order(route_id: str, transport_id: str):
     database.delete(
         "transports",

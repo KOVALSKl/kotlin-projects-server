@@ -196,7 +196,10 @@ class Tram(DataBaseModel):
     driver_name: str
     conductor_name: str
     start_date: str
-    trip_number: str
+    trip_number: int
+    capacity: int
+    total_distance: int
+    price: int
     route_id: UUID
 
     @field_serializer("route_id")
@@ -210,7 +213,10 @@ class ClientTram(BaseModel):
     driver_name: str
     conductor_name: str
     start_date: str
-    trip_number: str
+    trip_number: int
+    capacity: int
+    total_distance: int
+    price: int
     route_id: UUID
 
 
@@ -244,7 +250,7 @@ class SparePart(DataBaseModel):
     name: str
     catalog_number: str
     producer: str
-    price: int
+    price: float
     create_date: str
     catalog_section_id: UUID
 
@@ -258,7 +264,7 @@ class ClientSparePart(BaseModel):
     name: str
     catalog_number: str
     producer: str
-    price: int
+    price: float
     create_date: str
     catalog_section_id: UUID
 

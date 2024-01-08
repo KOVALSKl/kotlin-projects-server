@@ -3,10 +3,10 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
 from database import *
-from database.models import Tram, TramDepot, TramRoute, ClientTram, ClientTramDepot, ClientTramRoute
+from database.models import CarModel, CatalogSection, SparePart, ClientCarModel, ClientCatalogSection, ClientSparePart
 
 router = APIRouter(
-    prefix="/trams",
+    prefix="/cars",
 )
 
 
@@ -14,7 +14,7 @@ router = APIRouter(
 async def startup():
     """Создание необходимых таблиц"""
     database.create_table(
-        "tram_depots",
+        "car_models",
         {
             "id": [DatabaseTypes.TEXT, DatabaseTypes.PRIMARY_KEY],
             "name": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL, DatabaseTypes.UNIQUE],
@@ -22,15 +22,15 @@ async def startup():
     )
 
     database.create_table(
-        "tram_routes",
+        "catalog_sections",
         {
             "id": [DatabaseTypes.TEXT, DatabaseTypes.PRIMARY_KEY],
             "name": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL, DatabaseTypes.UNIQUE],
-            "depot_id": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL]
+            "car_model_id": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL]
         },
         {
-            "depot_id": DatabaseReference(
-                "tram_depots",
+            "car_model_id": DatabaseReference(
+                "car_models",
                 "id",
                 on_delete=DatabaseActions.CASCADE
             )
@@ -38,19 +38,19 @@ async def startup():
     )
 
     database.create_table(
-        "trams",
+        "spare_parts",
         {
             "id": [DatabaseTypes.TEXT, DatabaseTypes.PRIMARY_KEY],
-            "number": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
-            "driver_name": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
-            "conductor_name": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
-            "start_date": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
-            "trip_number": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
-            "route_id": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
+            "name": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
+            "catalog_number": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
+            "producer": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
+            "price": [DatabaseTypes.REAL, DatabaseTypes.NOT_NULL],
+            "create_date": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
+            "catalog_section_id": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
         },
         {
-            "route_id": DatabaseReference(
-                "tram_routes",
+            "catalog_section_id": DatabaseReference(
+                "catalog_sections",
                 "id",
                 on_delete=DatabaseActions.CASCADE
             ),
@@ -58,66 +58,66 @@ async def startup():
     )
 
 
-@router.get("/depots", tags=["tram-depots"])
-async def get_depots():
+@router.get("/models", tags=["car-models"])
+async def get_car_models():
     depots = database.select_many(
-        "tram_depots",
+        "car_models",
         ["*"]
     )
 
     return JSONResponse(depots)
 
 
-@router.post("/depots", tags=["tram-depots"])
-async def create_depot(tram_depot: ClientTramDepot):
+@router.post("/models", tags=["car-models"])
+async def create_car_model(car_model: ClientCarModel):
 
     """Создание необходимых таблиц"""
-    client_depot_dict = tram_depot.model_dump()
-    delivery_service_model = TramDepot(
-        **client_depot_dict,
+    car_model_dict = car_model.model_dump()
+    delivery_service_model = CarModel(
+        **car_model_dict,
         id=uuid4()
     )
 
-    database.insert("tram_depots", delivery_service_model.model_dump())
+    database.insert("car_models", delivery_service_model.model_dump())
 
 
-@router.put("/depots", tags=["tram-depots"])
-async def update_depot(tram_depot: ClientTramDepot):
-    client_depot_dict = tram_depot.model_dump(exclude={"id": True})
+@router.put("/models", tags=["car-models"])
+async def update_car_model(car_model: ClientCarModel):
+    client_depot_dict = car_model.model_dump(exclude={"id": True})
 
     database.update(
-        "tram_depots",
+        "car_models",
         client_depot_dict.keys(),
         DatabaseWhereQuery({
             DatabaseLogicalOperators.AND.value: {
-                "id": tram_depot.id
+                "id": car_model.id
             }
         }),
         client_depot_dict.values()
     )
 
 
-@router.delete("/depots/{depot_id}", tags=["tram-depots"])
-async def delete_depot(depot_id: str):
+@router.delete("/models/{car_model_id}", tags=["car-models"])
+async def delete_car_model(car_model_id: str):
 
     database.delete(
-        "tram_depots",
+        "car_models",
         DatabaseWhereQuery({
             DatabaseLogicalOperators.AND.value: {
-                "id": depot_id
+                "id": car_model_id
             }
         })
     )
 
 
-@router.get("/{depot_id}/routes", tags=["tram-routes"])
-async def get_routes(depot_id: str):
+@router.get("/{model_id}/sections", tags=["catalog-sections"])
+async def get_sections(model_id: str):
     sections = database.select_many(
-        "tram_routes",
-        ["id", "name", "depot_id"],
+        "catalog_sections",
+        ["id", "name", "car_model_id"],
         DatabaseWhereQuery({
             DatabaseLogicalOperators.AND.value: {
-                "depot_id": depot_id
+                "car_model_id": model_id
             }
         })
     )
@@ -125,102 +125,102 @@ async def get_routes(depot_id: str):
     return JSONResponse(sections)
 
 
-@router.post("/routes", tags=["tram-routes"])
-async def create_route(route: ClientTramRoute):
-    route_dict = route.model_dump()
-    route_model = TramRoute(
+@router.post("/sections", tags=["catalog-sections"])
+async def create_section(section: ClientCatalogSection):
+    route_dict = section.model_dump()
+    route_model = CatalogSection(
         **route_dict,
         id=uuid4()
     )
 
-    database.insert("tram_routes", route_model.model_dump())
+    database.insert("catalog_sections", route_model.model_dump())
 
 
-@router.put("/routes", tags=["tram-routes"])
-async def update_route(route: ClientTramRoute):
-    client_route_dict = route.model_dump(exclude={
+@router.put("/sections", tags=["catalog-sections"])
+async def update_section(section: ClientCatalogSection):
+    client_route_dict = section.model_dump(exclude={
         "id": True,
-        "depot_id": True,
+        "car_model_id": True,
     })
 
     database.update(
-        "tram_routes",
+        "catalog_sections",
         client_route_dict.keys(),
         DatabaseWhereQuery({
             DatabaseLogicalOperators.AND.value: {
-                "id": route.id
+                "id": section.id
             }
         }),
         client_route_dict.values()
     )
 
 
-@router.delete("/routes/{route_id}", tags=["tram-routes"])
-async def delete_route(route_id: str):
+@router.delete("/sections/{section_id}", tags=["catalog-sections"])
+async def delete_section(section_id: str):
     database.delete(
-        "tram_routes",
+        "catalog_sections",
         DatabaseWhereQuery({
             DatabaseLogicalOperators.AND.value: {
-                "id": route_id
+                "id": section_id
             }
         })
     )
 
 
-@router.get("/{tram_depot_id}/{route_id}", tags=["trams"])
-async def get_route_trams(tram_depot_id: str, route_id: str):
+@router.get("/{catalog_section_id}/{spare_part_id}", tags=["spare-parts"])
+async def get_section_parts(car_model_id: str, section_id: str):
 
-    trams = database.execute(f"""
-        SELECT tr.id, number, driver_name, conductor_name, start_date, trip_number, route_id FROM trams tr 
-        JOIN tram_routes rt on rt.id = tr.route_id 
-        WHERE rt.depot_id = '{tram_depot_id}' AND rt.id = '{route_id}';
+    parts = database.execute(f"""
+        SELECT sp.id, sp.name, catalog_number, producer, price, create_date, catalog_section_id FROM spare_parts sp 
+        JOIN catalog_sections cs on cs.id = sp.catalog_section_id 
+        WHERE cs.car_model_id = '{car_model_id}' AND cs.id = '{section_id}';
     """).fetchall()
 
-    print(route_id)
-    print(trams)
+    print(car_model_id)
+    print(section_id)
 
-    return trams
+    return parts
 
 
-@router.post("/routes/{route_id}", tags=["trams"])
-async def create_tram(route_id: str, client_tram: ClientTram):
-    client_transport_dict = client_tram.model_dump(exclude={"id": True})
-    news_model = Tram(
+@router.post("/sections/{section_id}", tags=["spare-parts"])
+async def create_part(section_id: str, part: ClientSparePart):
+    client_transport_dict = part.model_dump(exclude={"id": True})
+    part_model = SparePart(
         **client_transport_dict,
         id=uuid4()
     )
 
-    database.insert("trams", news_model.model_dump())
+    database.insert("spare_parts", part_model.model_dump())
 
 
-@router.put("/routes/{route_id}", tags=["trams"])
-async def update_tram(route_id: str, client_tram: ClientTram):
+@router.put("/sections/{section_id}", tags=["spare-parts"])
+async def update_part(section_id: str, part: ClientSparePart):
 
-    client_transport_dict = client_tram.model_dump(exclude={
+    client_part_dict = part.model_dump(exclude={
         "id": True,
-        "route_id": True,
+        "catalog_section_id": True,
     })
 
     database.update(
-        "trams",
-        client_transport_dict.keys(),
+        "spare_parts",
+        client_part_dict.keys(),
         DatabaseWhereQuery({
             DatabaseLogicalOperators.AND.value: {
-                "id": client_tram.id,
-                "route_id": client_tram.route_id
+                "id": part.id,
+                "catalog_section_id": part.catalog_section_id
             }
         }),
-        client_transport_dict.values()
+        client_part_dict.values()
     )
 
 
-@router.delete("/routes/{route_id}/{tram_id}", tags=["trams"])
-async def delete_tram(route_id: str, tram_id: str):
+@router.delete("/sections/{section_id}/{part_id}", tags=["spare-parts"])
+async def delete_part(section_id: str, part_id: str):
     database.delete(
-        "trams",
+        "spare_parts",
         DatabaseWhereQuery({
             DatabaseLogicalOperators.AND.value: {
-                "id": tram_id
+                "id": part_id
             }
         })
     )
