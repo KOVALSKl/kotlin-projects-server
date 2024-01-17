@@ -227,7 +227,7 @@ class CarModel(DataBaseModel):
 
 
 class ClientCarModel(BaseModel):
-    id: UUID
+    id: UUID = Field(UUID, exclude=True)
     name: str
 
 
@@ -241,7 +241,7 @@ class CatalogSection(DataBaseModel):
 
 
 class ClientCatalogSection(BaseModel):
-    id: UUID
+    id: UUID = Field(UUID, exclude=True)
     name: str
     car_model_id: UUID
 
@@ -250,7 +250,9 @@ class SparePart(DataBaseModel):
     name: str
     catalog_number: str
     producer: str
-    price: float
+    price: int
+    description: str
+    availability_count: int
     create_date: str
     catalog_section_id: UUID
 
@@ -260,11 +262,13 @@ class SparePart(DataBaseModel):
 
 
 class ClientSparePart(BaseModel):
-    id: UUID
+    id: UUID = Field(UUID, exclude=True)
     name: str
     catalog_number: str
     producer: str
-    price: float
+    price: int
+    description: str
+    availability_count: int
     create_date: str
     catalog_section_id: UUID
 
@@ -276,7 +280,7 @@ class IndustrialStores(DataBaseModel):
 
 
 class ClientIndustrialStores(BaseModel):
-    id: UUID
+    id: UUID = Field(UUID, exclude=True)
     name: str
 
 
@@ -290,7 +294,7 @@ class IndustrialDepartment(DataBaseModel):
 
 
 class ClientIndustrialDepartment(BaseModel):
-    id: UUID
+    id: UUID = Field(UUID, exclude=True)
     name: str
     store_id: UUID
 
@@ -298,9 +302,10 @@ class ClientIndustrialDepartment(BaseModel):
 class IndustrialProduct(DataBaseModel):
     name: str
     item_number: str
-    weight: float
-    price: float
+    weight: int
+    price: int
     producer: str
+    description: str
     packing_date: str
     department_id: UUID
 
@@ -310,12 +315,13 @@ class IndustrialProduct(DataBaseModel):
 
 
 class ClientIndustrialProduct(BaseModel):
-    id: UUID
+    id: UUID = Field(UUID, exclude=True)
     name: str
     item_number: str
-    weight: float
-    price: float
+    weight: int
+    price: int
     producer: str
+    description: str
     packing_date: str
     department_id: UUID
 
@@ -332,7 +338,7 @@ class Courier(DataBaseModel):
 
 
 class ClientCourier(BaseModel):
-    id: UUID
+    id: UUID = Field(UUID, exclude=True)
     name: str
     delivery_service_id: UUID
 

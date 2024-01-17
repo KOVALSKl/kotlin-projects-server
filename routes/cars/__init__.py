@@ -44,7 +44,9 @@ async def startup():
             "name": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "catalog_number": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "producer": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
-            "price": [DatabaseTypes.REAL, DatabaseTypes.NOT_NULL],
+            "price": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
+            "description": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
+            "availability_count": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
             "create_date": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "catalog_section_id": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
         },
@@ -168,16 +170,17 @@ async def delete_section(section_id: str):
 
 
 @router.get("/{catalog_section_id}/{spare_part_id}", tags=["spare-parts"])
-async def get_section_parts(car_model_id: str, section_id: str):
+async def get_section_parts(catalog_section_id: str, spare_part_id: str):
 
     parts = database.execute(f"""
-        SELECT sp.id, sp.name, catalog_number, producer, price, create_date, catalog_section_id FROM spare_parts sp 
+        SELECT sp.id, sp.name, catalog_number, 
+        producer, price, description,
+        availability_count,
+        create_date, catalog_section_id 
+        FROM spare_parts sp 
         JOIN catalog_sections cs on cs.id = sp.catalog_section_id 
-        WHERE cs.car_model_id = '{car_model_id}' AND cs.id = '{section_id}';
+        WHERE cs.car_model_id = '{catalog_section_id}' AND cs.id = '{spare_part_id}';
     """).fetchall()
-
-    print(car_model_id)
-    print(section_id)
 
     return parts
 
