@@ -330,17 +330,17 @@ class ClientIndustrialProduct(BaseModel):
 
 class Courier(DataBaseModel):
     name: str
-    delivery_service_id: UUID
+    deliver_service_id: UUID
 
-    @field_serializer("delivery_service_id")
-    def serialize_delivery_service_id(self, delivery_service_id: UUID, _info):
-        return str(delivery_service_id)
+    @field_serializer("deliver_service_id")
+    def serialize_deliver_service_id(self, deliver_service_id: UUID, _info):
+        return str(deliver_service_id)
 
 
 class ClientCourier(BaseModel):
     id: UUID = Field(UUID, exclude=True)
     name: str
-    delivery_service_id: UUID
+    deliver_service_id: UUID
 
 
 class CourierOrder(DataBaseModel):
@@ -349,9 +349,9 @@ class CourierOrder(DataBaseModel):
     time: str
     address: str
     delivery_time: str
-    total_weight: float
+    total_weight: int
     items: int
-    total_amount: float
+    total_amount: int
     courier_id: UUID
 
     @field_serializer("courier_id")
@@ -366,9 +366,9 @@ class ClientCourierOrder(BaseModel):
     time: str
     address: str
     delivery_time: str
-    total_weight: float
+    total_weight: int
     items: int
-    total_amount: float
+    total_amount: int
     courier_id: UUID
 
 
@@ -402,11 +402,11 @@ class Medication(DataBaseModel):
     name: str
     dosage: str
     volume: str
-    price: float
+    price: int
     producer: str
     expiration_date: str
     description: str
-    produce_date: str
+    effects: str
     medication_group_id: UUID
 
     @field_serializer("medication_group_id")
@@ -419,9 +419,9 @@ class ClientMedication(BaseModel):
     name: str
     dosage: str
     volume: str
-    price: float
+    price: int
     producer: str
     expiration_date: str
     description: str
-    produce_date: str
+    effects: str
     medication_group_id: UUID
