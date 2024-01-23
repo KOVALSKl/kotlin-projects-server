@@ -49,6 +49,5 @@ async def json_test(request: Request):
 
     return JSONResponse({
         "message": "All worked!",
-        "headers": request.headers,
         "data": request_body
     })
