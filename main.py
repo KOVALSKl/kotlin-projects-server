@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -36,4 +36,19 @@ app.include_router(olimp.router)
 async def root():
     return JSONResponse({
         "message": "Welcome to Kotlin Projects!"
+    })
+
+
+@app.post("/")
+async def json_test(request: Request):
+    request_body = await request.body()
+
+    print({
+        "message": "All worked!",
+        "headers": request.headers,
+        "data": request_body
+    })
+
+    return JSONResponse({
+        "message": "All worked!",
     })
