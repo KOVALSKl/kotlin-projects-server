@@ -42,8 +42,13 @@ async def startup():
         {
             "id": [DatabaseTypes.TEXT, DatabaseTypes.PRIMARY_KEY],
             "number": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
+            "driver_name": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
+            "conductor_name": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
+            "price": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
+            "capacity": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
+            "trip_number": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "departure_time": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
-            "return_time": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
+            "return_time": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "route_id": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
         },
         {
@@ -169,7 +174,10 @@ async def delete_store(route_id: str):
 async def get_store_orders(depot_id: str, route_id: str):
 
     orders = database.execute(f"""
-        SELECT tr.id, number, departure_time, return_time, route_id FROM transports tr 
+        SELECT tr.id, 
+        number, driver_name, conductor_name,  price,
+        capacity, trip_number, departure_time, return_time, route_id
+        FROM transports tr 
         JOIN routes rt on rt.id = tr.route_id 
         WHERE rt.depot_id = '{depot_id}' AND rt.id = '{route_id}';
     """).fetchall()

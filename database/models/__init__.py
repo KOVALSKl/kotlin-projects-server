@@ -149,6 +149,11 @@ class ClientRoute(BaseModel):
 
 class Transport(DataBaseModel):
     number: str
+    driver_name: str
+    conductor_name: str
+    price: int
+    capacity: int
+    trip_number: str
     departure_time: str
     return_time: str
     route_id: UUID
@@ -161,6 +166,11 @@ class Transport(DataBaseModel):
 class ClientTransport(BaseModel):
     id: UUID
     number: str
+    driver_name: str
+    conductor_name: str
+    price: int
+    capacity: int
+    trip_number: str
     departure_time: str
     return_time: str
     route_id: UUID
@@ -251,6 +261,7 @@ class SparePart(DataBaseModel):
     catalog_number: str
     producer: str
     price: int
+    weight: int
     description: str
     availability_count: int
     create_date: str
@@ -267,6 +278,7 @@ class ClientSparePart(BaseModel):
     catalog_number: str
     producer: str
     price: int
+    weight: int
     description: str
     availability_count: int
     create_date: str
@@ -425,3 +437,58 @@ class ClientMedication(BaseModel):
     description: str
     effects: str
     medication_group_id: UUID
+
+
+# OLYMPIC 48 - 13
+
+class OlympicGame(DataBaseModel):
+    name: str
+
+
+class ClientOlympicGame(BaseModel):
+    id: UUID
+    name: str
+
+
+class OlympicCompetitionType(DataBaseModel):
+    name: str
+    game_id: UUID
+
+    @field_serializer("game_id")
+    def serialize_game_id(self, game_id: UUID, _info):
+        return str(game_id)
+
+
+class ClientOlympicCompetitionType(BaseModel):
+    id: UUID
+    name: str
+    game_id: UUID
+
+
+class OlympicPlayer(DataBaseModel):
+    name: str
+    country: str
+    ranking: int
+    score: str
+    age: int
+    sport: str
+    height: int
+    weight: int
+    competition_id: UUID
+
+    @field_serializer("competition_id")
+    def serialize_competition_id(self, competition_id: UUID, _info):
+        return str(competition_id)
+
+
+class ClientOlympicPlayer(BaseModel):
+    id: UUID
+    name: str
+    country: str
+    ranking: int
+    score: str
+    age: int
+    sport: str
+    height: int
+    weight: int
+    competition_id: UUID

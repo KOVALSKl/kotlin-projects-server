@@ -45,6 +45,7 @@ async def startup():
             "catalog_number": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "producer": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "price": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
+            "weight": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
             "description": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
             "availability_count": [DatabaseTypes.INTEGER, DatabaseTypes.NOT_NULL],
             "create_date": [DatabaseTypes.TEXT, DatabaseTypes.NOT_NULL],
@@ -174,7 +175,7 @@ async def get_section_parts(catalog_section_id: str, spare_part_id: str):
 
     parts = database.execute(f"""
         SELECT sp.id, sp.name, catalog_number, 
-        producer, price, description,
+        producer, price, weight, description,
         availability_count,
         create_date, catalog_section_id 
         FROM spare_parts sp 
