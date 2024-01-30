@@ -43,7 +43,7 @@ async def root():
 
 @app.post("/")
 async def json_test(request: Request):
-    request_body = await Request.body()
+    request_body = await request.body()
 
     print(
         f"ПОЛУЧЕННЫЙ JSON: {request_body}"
