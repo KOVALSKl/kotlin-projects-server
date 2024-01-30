@@ -492,3 +492,12 @@ class ClientOlympicPlayer(BaseModel):
     height: int
     weight: int
     competition_id: UUID
+
+
+class JSONTestModel(BaseModel):
+    number: str
+    data: str
+    client_inn: str
+    region: int
+    address: str
+    items: list
