@@ -42,17 +42,11 @@ async def root():
 
 
 @app.post("/")
-async def json_test(json_model: JSONTestModel):
-    # request_body = await request.body()
-    #
-    # print({
-    #     "message": "All worked!",
-    #     "headers": request.headers,
-    #     "data": request_body
-    # })
+async def json_test(request: Request):
+    request_body = await Request.body()
 
     print(
-        f"ПОЛУЧЕННЫЙ JSON: {json_model.dict()}"
+        f"ПОЛУЧЕННЫЙ JSON: {request_body}"
     )
 
     return JSONResponse({
