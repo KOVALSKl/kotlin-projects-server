@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from routes import news, delivery, transport, auth, tram, cars, \
-    industrial_stores, delivers, pharmacy, olimp
+    industrial_stores, delivers, pharmacy, olimp, restaurants
 
 app = FastAPI(
     title="Kotlin Projects Server",
@@ -30,6 +30,7 @@ app.include_router(industrial_stores.router)
 app.include_router(delivers.router)
 app.include_router(pharmacy.router)
 app.include_router(olimp.router)
+app.include_router(restaurants.router)
 
 
 @app.get("/")

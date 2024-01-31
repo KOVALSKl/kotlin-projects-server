@@ -492,3 +492,58 @@ class ClientOlympicPlayer(BaseModel):
     height: int
     weight: int
     competition_id: UUID
+
+
+# 14-48 Restaurant
+
+class Restaurant(DataBaseModel):
+    name: str
+
+
+class ClientRestaurant(BaseModel):
+    id: UUID
+    name: str
+
+
+class DishCategory(DataBaseModel):
+    name: str
+    restaurant_id: UUID
+
+    @field_serializer("restaurant_id")
+    def serialize_restaurant_id(self, restaurant_id: UUID, _info):
+        return str(restaurant_id)
+
+
+class ClientDishCategory(BaseModel):
+    id: UUID
+    name: str
+    restaurant_id: UUID
+
+
+class Dish(DataBaseModel):
+    name: str
+    price: int
+    calories: int
+    ingredients: str
+    is_vegetarian: int
+    is_spicy: int
+    description: str
+    score: int
+    category_id: UUID
+
+    @field_serializer("category_id")
+    def serialize_category_id(self, category_id: UUID, _info):
+        return str(category_id)
+
+
+class ClientDish(BaseModel):
+    id: UUID
+    name: str
+    price: int
+    calories: int
+    ingredients: str
+    is_vegetarian: int
+    is_spicy: int
+    description: str
+    score: int
+    category_id: UUID
