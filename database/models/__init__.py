@@ -494,6 +494,7 @@ class ClientOlympicPlayer(BaseModel):
     competition_id: UUID
 
 
+
 # 14-48 Restaurant
 
 class Restaurant(DataBaseModel):
@@ -547,3 +548,13 @@ class ClientDish(BaseModel):
     description: str
     score: int
     category_id: UUID
+
+
+class JSONTestModel(BaseModel):
+    number: str
+    data: str
+    client_inn: str
+    region: int
+    address: str
+    items: list
+

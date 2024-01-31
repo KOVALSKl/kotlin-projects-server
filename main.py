@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes import news, delivery, transport, auth, tram, cars, \
     industrial_stores, delivers, pharmacy, olimp, restaurants
 
+from database.models import JSONTestModel
+
 app = FastAPI(
     title="Kotlin Projects Server",
     description="",
@@ -44,11 +46,9 @@ async def root():
 async def json_test(request: Request):
     request_body = await request.body()
 
-    print({
-        "message": "All worked!",
-        "headers": request.headers,
-        "data": request_body
-    })
+    print(
+        f"ПОЛУЧЕННЫЙ JSON: {request_body}"
+    )
 
     return JSONResponse({
         "message": "All worked!",
