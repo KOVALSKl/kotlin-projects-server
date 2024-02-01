@@ -602,6 +602,59 @@ class ClientOlympParticipant(BaseModel):
     olymp_profile_id: UUID
 
 
+class FlightDirection(DataBaseModel):
+    name: str
+
+
+class ClientFlightDirection(BaseModel):
+    id: UUID
+    name: str
+
+
+class FlightDateTime(DataBaseModel):
+    name: str
+    flight_id: UUID
+
+    @field_serializer
+    def serialize_flight_id(self, flight_id: UUID, _info):
+        return str(flight_id)
+
+
+class ClientFlightDateTime(BaseModel):
+    id: UUID
+    name: str
+    flight_id: UUID
+
+
+class FlightTicket(DataBaseModel):
+    flight_number: str
+    cost: int
+    occupancy: int
+    total_seats: int
+    departure_airport: str
+    arrival_airport: str
+    departure_time: str
+    arrival_time: str
+    datetime_id: UUID
+
+    @field_serializer
+    def serialize_datetime_id(self, datetime_id: str, _info):
+        return str(datetime_id)
+
+
+class ClientFlightTicket(BaseModel):
+    id: UUID
+    flight_number: str
+    cost: int
+    occupancy: int
+    total_seats: int
+    departure_airport: str
+    arrival_airport: str
+    departure_time: str
+    arrival_time: str
+    datetime_id: UUID
+
+
 class JSONTestModel(BaseModel):
     number: str
     data: str
