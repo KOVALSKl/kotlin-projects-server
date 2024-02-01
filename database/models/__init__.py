@@ -494,7 +494,6 @@ class ClientOlympicPlayer(BaseModel):
     competition_id: UUID
 
 
-
 # 14-48 Restaurant
 
 class Restaurant(DataBaseModel):
@@ -550,6 +549,59 @@ class ClientDish(BaseModel):
     category_id: UUID
 
 
+class OlympTask(DataBaseModel):
+    name: str
+
+
+class ClientOlympTask(BaseModel):
+    id: UUID
+    name: str
+
+
+class OlympProfile(DataBaseModel):
+    name: str
+    olymp_task_id: UUID
+
+    @field_serializer("olymp_task_id")
+    def serialize_olymp_task_id(self, olymp_task_id: UUID, _info):
+        return str(olymp_task_id)
+
+
+class ClientOlympProfile(BaseModel):
+    id: UUID
+    name: str
+    olymp_task_id: UUID
+
+
+class OlympParticipant(DataBaseModel):
+    full_name: str
+    qualification_score: int
+    final_score: int
+    hobbies: str
+    country: str
+    school: str
+    achievements: str
+    additional_information: str
+    olymp_profile_id: UUID
+
+    @field_serializer("olymp_profile_id")
+    def serialize_olymp_profile_id(self, olymp_profile_id: UUID, _info):
+        return str(olymp_profile_id)
+
+
+class ClientOlympParticipant(BaseModel):
+    id: UUID
+    full_name: str
+    qualification_score: int
+    final_score: int
+    hobbies: str
+    country: str
+    school: str
+    achievements: str
+    additional_information: str
+    olymp_profile_id: UUID
+
+
 class JSONTestModel(BaseModel):
     number: str
     data: str
@@ -557,4 +609,3 @@ class JSONTestModel(BaseModel):
     region: int
     address: str
     items: list
-
