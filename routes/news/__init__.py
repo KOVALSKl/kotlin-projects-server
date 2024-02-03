@@ -77,7 +77,6 @@ async def create_channel(client_channel: ClientChannel):
     client_channel_dict = client_channel.model_dump()
     channel_model = Channel(
         **client_channel_dict,
-        id=uuid4()
     )
 
     database.insert("news_channels", channel_model.model_dump())
@@ -132,7 +131,6 @@ async def create_news(channel_id: str, client_news: ClientNews):
     client_news_dict = client_news.model_dump()
     news_model = NewsSection(
         **client_news_dict,
-        id=uuid4()
     )
 
     database.insert("channel_articles", news_model.model_dump())
@@ -158,7 +156,6 @@ async def create_channel_section(section: ClientNewsSection):
     news_section_dict = section.model_dump()
     news_section_model = NewsSection(
         **news_section_dict,
-        id=uuid4()
     )
 
     database.insert("news_sections", news_section_model.model_dump())
@@ -215,7 +212,6 @@ async def create_news(section_id: str, client_news: ClientNews):
     client_news_dict = client_news.model_dump(exclude={"id": True})
     news_model = News(
         **client_news_dict,
-        id=uuid4()
     )
 
     database.insert("channel_articles", news_model.model_dump())

@@ -73,7 +73,6 @@ async def create_service(client_delivery_service: ClientDeliveryService):
     delivery_service_dict = client_delivery_service.model_dump()
     delivery_service_model = DeliveryService(
         **delivery_service_dict,
-        id=uuid4()
     )
 
     database.insert("delivery_service", delivery_service_model.model_dump())
@@ -128,7 +127,6 @@ async def create_store(store: ClientStore):
     store_dict = store.model_dump()
     store_model = Store(
         **store_dict,
-        id=uuid4()
     )
 
     database.insert("store", store_model.model_dump())
@@ -182,10 +180,9 @@ async def get_store_orders(service_id: str, store_id: str):
 
 @router.post("/stores/{store_id}", tags=["orders"])
 async def create_order(store_id: str, client_order: ClientOrder):
-    client_order_dict = client_order.model_dump(exclude={"id": True})
+    client_order_dict = client_order.model_dump()
     news_model = Order(
         **client_order_dict,
-        id=uuid4()
     )
 
     database.insert("orders", news_model.model_dump())
@@ -193,7 +190,6 @@ async def create_order(store_id: str, client_order: ClientOrder):
 
 @router.put("/stores/{store_id}", tags=["orders"])
 async def update_order(store_id: str, client_order: ClientOrder):
-    print("Order PUT " + f"{client_order.model_dump()}")
     client_order_dict = client_order.model_dump(exclude={
         "id": True,
         "store_id": True,

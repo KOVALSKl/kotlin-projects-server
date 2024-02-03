@@ -615,7 +615,7 @@ class FlightDateTime(DataBaseModel):
     name: str
     flight_id: UUID
 
-    @field_serializer
+    @field_serializer("flight_id")
     def serialize_flight_id(self, flight_id: UUID, _info):
         return str(flight_id)
 
@@ -637,7 +637,7 @@ class FlightTicket(DataBaseModel):
     arrival_time: str
     datetime_id: UUID
 
-    @field_serializer
+    @field_serializer("datetime_id")
     def serialize_datetime_id(self, datetime_id: str, _info):
         return str(datetime_id)
 

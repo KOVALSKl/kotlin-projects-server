@@ -79,7 +79,6 @@ async def create_flight_direction(flight_direction: ClientFlightDirection):
     flight_direction_dict = flight_direction.model_dump()
     delivery_service_model = FlightDirection(
         **flight_direction_dict,
-        id=uuid4()
     )
 
     database.insert("flight_directions", delivery_service_model.model_dump())
@@ -132,9 +131,8 @@ async def get_flight_datetime(flight_id: str):
 @router.post("/datetime", tags=["flights-datetime"])
 async def create_flight_datetime(flight_datetime: ClientFlightDateTime):
     route_dict = flight_datetime.model_dump()
-    route_model = ClientFlightDateTime(
-        **route_dict,
-        id=uuid4()
+    route_model = FlightDateTime(
+        **route_dict
     )
 
     database.insert("flight_datetime", route_model.model_dump())
@@ -171,8 +169,8 @@ async def delete_flight_datetime(flight_datetime_id: str):
     )
 
 
-@router.get("/{flight_datetime_id}/{flight_ticket_id}", tags=["flights-tickets"])
-async def get_datetime_tickets(flight_datetime_id: str, flight_ticket_id: str):
+@router.get("/{flight_id}/{flight_datetime_id}", tags=["flights-tickets"])
+async def get_datetime_tickets(flight_id: str, flight_datetime_id: str):
 
     parts = database.execute(f"""
         SELECT ft.id, flight_number, 
@@ -180,7 +178,7 @@ async def get_datetime_tickets(flight_datetime_id: str, flight_ticket_id: str):
         arrival_airport, departure_time, arrival_time, datetime_id
         FROM flight_tickets ft 
         JOIN flight_datetime fd on fd.id = ft.datetime_id 
-        WHERE fd.flight_id = '{flight_datetime_id}' AND fd.id = '{flight_ticket_id}';
+        WHERE fd.flight_id = '{flight_id}' AND fd.id = '{flight_datetime_id}';
     """).fetchall()
 
     return parts
@@ -188,10 +186,9 @@ async def get_datetime_tickets(flight_datetime_id: str, flight_ticket_id: str):
 
 @router.post("/datetime/{flight_datetime_id}", tags=["flights-tickets"])
 async def create_ticket(flight_datetime_id: str, ticket: ClientFlightTicket):
-    client_transport_dict = ticket.model_dump(exclude={"id": True})
+    client_transport_dict = ticket.model_dump()
     part_model = FlightTicket(
         **client_transport_dict,
-        id=uuid4()
     )
 
     database.insert("flight_tickets", part_model.model_dump())

@@ -77,8 +77,7 @@ async def create_car_model(car_model: ClientCarModel):
     """Создание необходимых таблиц"""
     car_model_dict = car_model.model_dump()
     delivery_service_model = CarModel(
-        **car_model_dict,
-        id=uuid4()
+        **car_model_dict
     )
 
     database.insert("car_models", delivery_service_model.model_dump())
@@ -132,8 +131,7 @@ async def get_sections(model_id: str):
 async def create_section(section: ClientCatalogSection):
     route_dict = section.model_dump()
     route_model = CatalogSection(
-        **route_dict,
-        id=uuid4()
+        **route_dict
     )
 
     database.insert("catalog_sections", route_model.model_dump())
@@ -188,10 +186,9 @@ async def get_section_parts(catalog_section_id: str, spare_part_id: str):
 
 @router.post("/sections/{section_id}", tags=["spare-parts"])
 async def create_part(section_id: str, part: ClientSparePart):
-    client_transport_dict = part.model_dump(exclude={"id": True})
+    client_transport_dict = part.model_dump()
     part_model = SparePart(
-        **client_transport_dict,
-        id=uuid4()
+        **client_transport_dict
     )
 
     database.insert("spare_parts", part_model.model_dump())

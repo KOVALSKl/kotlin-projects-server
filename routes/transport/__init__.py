@@ -78,7 +78,6 @@ async def create_depot(client_depot: ClientDepot):
     client_depot_dict = client_depot.model_dump()
     delivery_service_model = Depot(
         **client_depot_dict,
-        id=uuid4()
     )
 
     database.insert("depots", delivery_service_model.model_dump())
@@ -133,7 +132,6 @@ async def create_store(route: ClientRoute):
     route_dict = route.model_dump()
     route_model = Route(
         **route_dict,
-        id=uuid4()
     )
 
     database.insert("routes", route_model.model_dump())
@@ -190,10 +188,9 @@ async def get_store_orders(depot_id: str, route_id: str):
 
 @router.post("/routes/{route_id}", tags=["transports"])
 async def create_order(route_id: str, client_transport: ClientTransport):
-    client_transport_dict = client_transport.model_dump(exclude={"id": True})
+    client_transport_dict = client_transport.model_dump()
     news_model = Transport(
         **client_transport_dict,
-        id=uuid4()
     )
 
     database.insert("transports", news_model.model_dump())

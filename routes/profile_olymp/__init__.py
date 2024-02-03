@@ -76,10 +76,9 @@ async def get_depots():
 async def create_olympic_game(olympic_game: ClientOlympTask):
 
     """Создание необходимых таблиц"""
-    olympic_game_dict = olympic_game.model_dump(exclude={"id": True})
+    olympic_game_dict = olympic_game.model_dump()
     olympic_game_model = OlympTask(
         **olympic_game_dict,
-        id=uuid4()
     )
 
     database.insert("multiprofile_olymp", olympic_game_model.model_dump())
@@ -87,7 +86,7 @@ async def create_olympic_game(olympic_game: ClientOlympTask):
 
 @router.put("/tasks", tags=["olympic-tasks"])
 async def update_olympic_game(olympic_game: ClientOlympTask):
-    olympic_game_dict = olympic_game.model_dump(exclude={"id": True})
+    olympic_game_dict = olympic_game.model_dump()
 
     database.update(
         "multiprofile_olymp",
@@ -131,12 +130,9 @@ async def get_competitions(task_id: str):
 
 @router.post("/profiles", tags=["olymp-profiles"])
 async def create_competition(competition: ClientOlympProfile):
-    competition_dict = competition.model_dump(exclude={
-        "id": True
-    })
+    competition_dict = competition.model_dump()
     route_model = OlympProfile(
         **competition_dict,
-        id=uuid4()
     )
 
     database.insert("profiles", route_model.model_dump())
@@ -162,12 +158,12 @@ async def update_route(competition: ClientOlympProfile):
 
 
 @router.delete("/profiles/{profile_id}", tags=["olymp-profiles"])
-async def delete_route(competition_id: str):
+async def delete_route(profile_id: str):
     database.delete(
         "profiles",
         DatabaseWhereQuery({
             DatabaseLogicalOperators.AND.value: {
-                "id": competition_id
+                "id": profile_id
             }
         })
     )
@@ -177,11 +173,11 @@ async def delete_route(competition_id: str):
 async def get_competition_player(task_id: str, profile_id: str):
 
     players = database.execute(f"""
-        SELECT op.id, full_name, qualification_score, 
+        SELECT op.id, op.full_name, qualification_score, 
         final_score, hobbies, country, school, achievements, 
         additional_information, olymp_profile_id
         FROM olymp_participants op 
-        JOIN profiles pr on pr.id = op.competition_id
+        JOIN profiles pr on pr.id = op.olymp_profile_id
         WHERE pr.olymp_task_id = '{task_id}' AND pr.id = '{profile_id}';
     """).fetchall()
 
@@ -192,17 +188,16 @@ async def get_competition_player(task_id: str, profile_id: str):
 
 @router.post("/profiles/{profile_id}", tags=["olympic-participants"])
 async def create_player(profile_id: str, olympic_player: ClientOlympParticipant):
-    client_olympic_player_dict = olympic_player.model_dump(exclude={"id": True})
+    client_olympic_player_dict = olympic_player.model_dump()
     olympic_player_model = OlympParticipant(
         **client_olympic_player_dict,
-        id=uuid4()
     )
 
-    database.insert("profiles", olympic_player_model.model_dump())
+    database.insert("olymp_participants", olympic_player_model.model_dump())
 
 
 @router.put("/profiles/{profile_id}", tags=["olympic-participants"])
-async def update_player(competition_id: str, client_player: ClientOlympParticipant):
+async def update_player(profile_id: str, client_player: ClientOlympParticipant):
 
     client_player_dict = client_player.model_dump(exclude={
         "id": True,

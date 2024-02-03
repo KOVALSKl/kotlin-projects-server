@@ -75,10 +75,9 @@ async def get_depots():
 async def create_depot(tram_depot: ClientTramDepot):
 
     """Создание необходимых таблиц"""
-    client_depot_dict = tram_depot.model_dump(exclude={"id": True})
+    client_depot_dict = tram_depot.model_dump()
     delivery_service_model = TramDepot(
         **client_depot_dict,
-        id=uuid4()
     )
 
     database.insert("tram_depots", delivery_service_model.model_dump())
@@ -130,12 +129,9 @@ async def get_routes(depot_id: str):
 
 @router.post("/routes", tags=["tram-routes"])
 async def create_route(route: ClientTramRoute):
-    route_dict = route.model_dump(exclude={
-        "id": True
-    })
+    route_dict = route.model_dump()
     route_model = TramRoute(
         **route_dict,
-        id=uuid4()
     )
 
     database.insert("tram_routes", route_model.model_dump())
@@ -191,10 +187,9 @@ async def get_route_trams(tram_depot_id: str, route_id: str):
 
 @router.post("/routes/{route_id}", tags=["trams"])
 async def create_tram(route_id: str, client_tram: ClientTram):
-    client_transport_dict = client_tram.model_dump(exclude={"id": True})
+    client_transport_dict = client_tram.model_dump()
     news_model = Tram(
         **client_transport_dict,
-        id=uuid4()
     )
 
     database.insert("trams", news_model.model_dump())

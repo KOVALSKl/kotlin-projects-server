@@ -75,10 +75,9 @@ async def get_industrial_stores():
 async def create_industrial_store(industrial_store: ClientIndustrialStores):
 
     """Создание необходимых таблиц"""
-    car_model_dict = industrial_store.model_dump(exclude={"id": True})
+    car_model_dict = industrial_store.model_dump()
     delivery_service_model = IndustrialStores(
         **car_model_dict,
-        id=uuid4()
     )
 
     database.insert("industrial_stores", delivery_service_model.model_dump())
@@ -125,17 +124,14 @@ async def get_industrial_departments(store_id: str):
         })
     )
 
-    print(f"\nindustrial/{store_id}/departments -> departments: {sections}\n")
-
     return JSONResponse(sections)
 
 
 @router.post("/departments", tags=["industrial-departments"])
 async def create_industrial_department(department: ClientIndustrialDepartment):
-    route_dict = department.model_dump(exclude={"id": True})
+    route_dict = department.model_dump()
     route_model = IndustrialDepartment(
         **route_dict,
-        id=uuid4()
     )
 
     database.insert("industrial_departments", route_model.model_dump())
@@ -192,10 +188,9 @@ async def get_department_products(store_id: str, department_id: str):
 
 @router.post("/departments/{department_id}", tags=["industrial-products"])
 async def create_industrial_products(department_id: str, client_product: ClientIndustrialProduct):
-    client_product_dict = client_product.model_dump(exclude={"id": True})
+    client_product_dict = client_product.model_dump()
     product = IndustrialProduct(
         **client_product_dict,
-        id=uuid4()
     )
 
     database.insert("industrial_products", product.model_dump())

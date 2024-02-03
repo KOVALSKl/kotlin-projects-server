@@ -76,10 +76,9 @@ async def get_services():
 async def create_service(client_delivery_service: ClientDeliveryService):
 
     """Создание необходимых таблиц"""
-    delivery_service_dict = client_delivery_service.model_dump(exclude={"id": True})
+    delivery_service_dict = client_delivery_service.model_dump()
     delivery_service_model = DeliveryService(
         **delivery_service_dict,
-        id=uuid4()
     )
 
     database.insert("delivers_services", delivery_service_model.model_dump())
@@ -133,12 +132,9 @@ async def get_couriers(service_id: str):
 
 @router.post("/couriers", tags=["couriers"])
 async def create_courier(courier: ClientCourier):
-    courier_dict = courier.model_dump(exclude={
-        "id": True
-    })
+    courier_dict = courier.model_dump()
     route_model = Courier(
         **courier_dict,
-        id=uuid4()
     )
 
     database.insert("couriers", route_model.model_dump())
@@ -193,10 +189,9 @@ async def get_courier_orders(deliver_service_id: str, courier_id: str):
 
 @router.post("/couriers/{courier_id}", tags=["orders"])
 async def create_order(courier_id: str, client_order: ClientCourierOrder):
-    order_dict = client_order.model_dump(exclude={"id": True})
+    order_dict = client_order.model_dump()
     order_model = CourierOrder(
         **order_dict,
-        id=uuid4()
     )
 
     database.insert("courier_orders", order_model.model_dump())

@@ -76,10 +76,9 @@ async def get_pharmacy():
 async def create_pharmacy(client_pharmacy: ClientPharmacy):
 
     """Создание необходимых таблиц"""
-    client_pharmacy_dict = client_pharmacy.model_dump(exclude={"id": True})
+    client_pharmacy_dict = client_pharmacy.model_dump()
     pharmacy_model = Pharmacy(
         **client_pharmacy_dict,
-        id=uuid4()
     )
 
     database.insert("pharmacies", pharmacy_model.model_dump())
@@ -131,12 +130,9 @@ async def get_group(pharmacy_id: str):
 
 @router.post("/groups", tags=["medication-group"])
 async def create_group(group: ClientMedicationGroup):
-    group_dict = group.model_dump(exclude={
-        "id": True
-    })
+    group_dict = group.model_dump()
     group_model = MedicationGroup(
         **group_dict,
-        id=uuid4()
     )
 
     database.insert("medication_groups", group_model.model_dump())
@@ -189,10 +185,9 @@ async def get_group_medication(pharmacy_id: str, medication_group_id: str):
 
 @router.post("/groups/{medication_group_id}", tags=["medications"])
 async def create_medication(medication_group_id: str, client_medication: ClientMedication):
-    medication_dict = client_medication.model_dump(exclude={"id": True})
+    medication_dict = client_medication.model_dump()
     medication_model = Medication(
         **medication_dict,
-        id=uuid4()
     )
 
     database.insert("medications", medication_model.model_dump())

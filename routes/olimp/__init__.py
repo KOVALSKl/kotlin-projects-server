@@ -76,10 +76,9 @@ async def get_depots():
 async def create_olympic_game(olympic_game: ClientOlympicGame):
 
     """Создание необходимых таблиц"""
-    olympic_game_dict = olympic_game.model_dump(exclude={"id": True})
+    olympic_game_dict = olympic_game.model_dump()
     olympic_game_model = OlympicGame(
         **olympic_game_dict,
-        id=uuid4()
     )
 
     database.insert("olympic_games", olympic_game_model.model_dump())
@@ -131,12 +130,9 @@ async def get_competitions(game_id: str):
 
 @router.post("/competitions", tags=["competition-types"])
 async def create_competition(competition: ClientOlympicCompetitionType):
-    competition_dict = competition.model_dump(exclude={
-        "id": True
-    })
+    competition_dict = competition.model_dump()
     route_model = OlympicCompetitionType(
         **competition_dict,
-        id=uuid4()
     )
 
     database.insert("competition_types", route_model.model_dump())
@@ -192,10 +188,9 @@ async def get_competition_player(game_id: str, competition_id: str):
 
 @router.post("/competitions/{competition_id}", tags=["olympic-players"])
 async def create_player(competition_id: str, olympic_player: ClientOlympicPlayer):
-    client_olympic_player_dict = olympic_player.model_dump(exclude={"id": True})
+    client_olympic_player_dict = olympic_player.model_dump()
     olympic_player_model = OlympicPlayer(
         **client_olympic_player_dict,
-        id=uuid4()
     )
 
     database.insert("olympic_players", olympic_player_model.model_dump())
