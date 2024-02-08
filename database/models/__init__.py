@@ -655,6 +655,59 @@ class ClientFlightTicket(BaseModel):
     datetime_id: UUID
 
 
+class TaxiCompany(DataBaseModel):
+    name: str
+
+
+class ClientTaxiCompany(BaseModel):
+    id: UUID
+    name: str
+
+
+class TaxiService(DataBaseModel):
+    name: str
+    company_id: UUID
+
+    @field_serializer("company_id")
+    def serialize_company_id(self, company_id: UUID, _info):
+        return str(company_id)
+
+
+class ClientTaxiService(BaseModel):
+    id: UUID
+    name: str
+    company_id: UUID
+
+
+class TaxiAuto(DataBaseModel):
+    brand: str
+    number: str
+    driver_name: str
+    model: str
+    year: int
+    color: str
+    seats: int
+    milage: int
+    service_id: UUID
+
+    @field_serializer("service_id")
+    def serialize_service_id(self, service_id: UUID, _info):
+        return str(service_id)
+
+
+class ClientTaxiAuto(BaseModel):
+    id: UUID
+    brand: str
+    number: str
+    driver_name: str
+    model: str
+    year: int
+    color: str
+    seats: int
+    milage: int
+    service_id: UUID
+
+
 class JSONTestModel(BaseModel):
     number: str
     data: str
