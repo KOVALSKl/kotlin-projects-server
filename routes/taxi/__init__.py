@@ -112,13 +112,13 @@ async def delete_taxi_company(company_id: str):
 
 
 @router.get("/{company_id}/services", tags=["taxi-services"])
-async def get_taxi_service(flight_id: str):
+async def get_taxi_service(company_id: str):
     sections = database.select_many(
-        "taxi_service",
-        ["id", "name", "flight_id"],
+        "taxi_services",
+        ["id", "name", "company_id"],
         DatabaseWhereQuery({
             DatabaseLogicalOperators.AND.value: {
-                "flight_id": flight_id
+                "company_id": company_id
             }
         })
     )
@@ -126,25 +126,25 @@ async def get_taxi_service(flight_id: str):
     return JSONResponse(sections)
 
 
-@router.post("/datetime", tags=["taxi-services"])
+@router.post("/services", tags=["taxi-services"])
 async def create_taxi_service(taxi_service: ClientTaxiService):
     taxi_service_dict = taxi_service.model_dump()
     taxi_service_model = TaxiService(
         **taxi_service_dict
     )
 
-    database.insert("taxi_service", taxi_service_model.model_dump())
+    database.insert("taxi_services", taxi_service_model.model_dump())
 
 
-@router.put("/datetime", tags=["taxi-services"])
+@router.put("/services", tags=["taxi-services"])
 async def update_taxi_service(taxi_service: ClientTaxiService):
     client_taxi_service_dict = taxi_service.model_dump(exclude={
         "id": True,
-        "flight_id": True,
+        "company_id": True,
     })
 
     database.update(
-        "taxi_service",
+        "taxi_services",
         client_taxi_service_dict.keys(),
         DatabaseWhereQuery({
             DatabaseLogicalOperators.AND.value: {
@@ -155,10 +155,10 @@ async def update_taxi_service(taxi_service: ClientTaxiService):
     )
 
 
-@router.delete("/datetime/{taxi_service_id}", tags=["taxi-services"])
+@router.delete("/services/{taxi_service_id}", tags=["taxi-services"])
 async def delete_taxi_service(taxi_service_id: str):
     database.delete(
-        "taxi_service",
+        "taxi_services",
         DatabaseWhereQuery({
             DatabaseLogicalOperators.AND.value: {
                 "id": taxi_service_id
@@ -174,14 +174,14 @@ async def get_service_autos(company_id: str, taxi_service_id: str):
         SELECT ta.id, brand, number, driver_name,
         model, year, color, seats, milage, service_id
         FROM taxi_autos ta 
-        JOIN taxi_service ts on ts.id = ta.datetime_id 
+        JOIN taxi_services ts on ts.id = ta.service_id 
         WHERE ts.company_id = '{company_id}' AND ts.id = '{taxi_service_id}';
     """).fetchall()
 
     return parts
 
 
-@router.post("/datetime/{taxi_service_id}", tags=["taxi-autos"])
+@router.post("/services/{taxi_service_id}", tags=["taxi-autos"])
 async def create_taxi_autos(taxi_service_id: str, auto: ClientTaxiAuto):
     client_auto_dict = auto.model_dump()
     auto_model = TaxiAuto(
@@ -191,7 +191,7 @@ async def create_taxi_autos(taxi_service_id: str, auto: ClientTaxiAuto):
     database.insert("taxi_autos", auto_model.model_dump())
 
 
-@router.put("/datetime/{taxi_service_id}", tags=["taxi-autos"])
+@router.put("/services/{taxi_service_id}", tags=["taxi-autos"])
 async def update_taxi_autos(taxi_service_id: str, auto: ClientTaxiAuto):
 
     client_auto_dict = auto.model_dump(exclude={
@@ -212,7 +212,7 @@ async def update_taxi_autos(taxi_service_id: str, auto: ClientTaxiAuto):
     )
 
 
-@router.delete("/datetime/{taxi_service_id}/{auto_id}", tags=["taxi-autos"])
+@router.delete("/services/{taxi_service_id}/{auto_id}", tags=["taxi-autos"])
 async def delete_taxi_autos(taxi_service_id: str, auto_id: str):
     database.delete(
         "taxi_autos",
