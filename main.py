@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from routes import news, delivery, transport, auth, tram, cars, \
-    industrial_stores, delivers, pharmacy, olimp, restaurants, profile_olymp, flights, taxi
+    industrial_stores, delivers, pharmacy, olimp, restaurants, profile_olymp, flights, taxi, maintenance
 
 from database.models import JSONTestModel
 
@@ -36,6 +36,7 @@ app.include_router(restaurants.router)
 app.include_router(profile_olymp.router)
 app.include_router(flights.router)
 app.include_router(taxi.router)
+app.include_router(maintenance.router)
 
 
 @app.get("/")

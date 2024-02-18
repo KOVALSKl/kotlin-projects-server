@@ -708,6 +708,59 @@ class ClientTaxiAuto(BaseModel):
     service_id: UUID
 
 
+class MaintenanceStation(DataBaseModel):
+    name: str
+
+
+class ClientMaintenanceStation(BaseModel):
+    id: UUID
+    name: str
+
+
+class MaintenanceWorker(DataBaseModel):
+    name: str
+    station_id: UUID
+
+    @field_serializer("station_id")
+    def serialize_station_id(self, station_id: UUID, _info):
+        return str(station_id)
+
+
+class ClientMaintenanceWorker(BaseModel):
+    id: UUID
+    name: str
+    station_id: UUID
+
+
+class MaintenanceWork(DataBaseModel):
+    work_type: str
+    brand: str
+    number: str
+    date: str
+    mechanic_name: str
+    description: str
+    cost: int
+    duration: int
+    worker_id: UUID
+
+    @field_serializer("worker_id")
+    def serialize_worker_id(self, worker_id: UUID, _info):
+        return str(worker_id)
+
+
+class ClientMaintenanceWork(BaseModel):
+    id: UUID
+    work_type: str
+    brand: str
+    number: str
+    date: str
+    mechanic_name: str
+    description: str
+    cost: int
+    duration: int
+    worker_id: UUID
+
+
 class JSONTestModel(BaseModel):
     number: str
     data: str
